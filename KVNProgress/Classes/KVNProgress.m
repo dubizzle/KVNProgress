@@ -108,23 +108,27 @@ static KVNProgressConfiguration *configuration;
 
 + (KVNProgress *)sharedView
 {
-	static KVNProgress *sharedView = nil;
-	static dispatch_once_t onceToken;
-	
-	dispatch_once(&onceToken, ^{
-		UINib *nib = [UINib nibWithNibName:@"KVNProgressView"
-                                    bundle:[NSBundle bundleForClass:[KVNProgress class]]];
-		NSArray *nibViews = [nib instantiateWithOwner:self
-											  options:0];
+    static KVNProgress *sharedView = nil;
+    static dispatch_once_t onceToken;
+    
+    dispatch_once(&onceToken, ^{
 
-		
-		sharedView = nibViews[0];
-		
-		sharedView.queue = [NSOperationQueue mainQueue];
-		sharedView.queue.maxConcurrentOperationCount = 1;
-	});
-	
-	return sharedView;
+    NSString *mainBundlePath = [[NSBundle mainBundle] resourcePath];
+    NSString *frameworkBundlePath = [mainBundlePath stringByAppendingPathComponent:@"KVNProgress.bundle"];
+    NSBundle *frameworkBundle = [NSBundle bundleWithPath:frameworkBundlePath];
+        UINib *nib = [UINib nibWithNibName:@"KVNProgressView"
+                                    bundle:frameworkBundle];
+        NSArray *nibViews = [nib instantiateWithOwner:self
+                                              options:0];
+
+        
+        sharedView = nibViews[0];
+        
+        sharedView.queue = [NSOperationQueue mainQueue];
+        sharedView.queue.maxConcurrentOperationCount = 1;
+    });
+    
+    return sharedView;
 }
 
 #pragma mark - Life cycle
